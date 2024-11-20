@@ -1,0 +1,8 @@
+[package]
+name = "ship_frame"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "=0.15.0-rc.3"
+slotmap = "1.0.7"
