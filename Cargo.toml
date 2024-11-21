@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 bevy = "=0.15.0-rc.3"
-slotmap = "1.0.7"
+indexmap = "2.6"
+serde = "1.0"

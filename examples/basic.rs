@@ -1,7 +1,4 @@
-use bevy::{
-    log::{Level, LogPlugin},
-    prelude::*,
-};
+use bevy::prelude::*;
 
 use ship_frame::*;
 
@@ -16,14 +13,23 @@ fn main() {
 
     // app.run();
 
-    let mut frame = FrameGraph::new();
+    let mut allocator = FrameIdAllocator::new();
 
-    let (_, v00, v50) = frame.create_beam(Vec3::new(0., 0., 0.), Vec3::new(5., 0., 0.));
-    let (_, v50b, v20) = frame.create_beam(Vec3::new(5., 0., 0.), Vec3::new(2., 0., 0.));
-    frame.merge_vertices(v50b, v50);
-    let (_, v00b, v01) = frame.create_beam(Vec3::new(0., 0., 0.), Vec3::new(0., 1., 0.));
-    frame.merge_vertices(v00b, v00);
-    let (_, v70, v80) = frame.create_beam(Vec3::new(7., 0., 0.), Vec3::new(8., 0., 0.));
+    let (mut frame, a, b) = FrameGraph::new(
+        &mut allocator,
+        Vec3::new(0., 0., 0.),
+        Vec3::new(5., 0., 0.),
+        (),
+    );
+    let c = frame.new_beam_extend(&mut allocator, b, Vec3::new(0., 5., 0.), ());
+    let d = frame.new_beam_extend(&mut allocator, c, Vec3::new(5., 5., 0.), ());
+    frame.new_beam_join(a, d, ());
 
-    frame.try_split(v00, v80);
+    println!("original: {:?}", frame);
+
+    if let Some(split) = frame.remove_beam(BeamId::from_vertices(b, c)) {
+        println!("split into {:?} and {:?}", frame, split);
+    } else {
+        println!("no split");
+    }
 }
