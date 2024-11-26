@@ -5,6 +5,8 @@ use bevy::{
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 
+pub mod graph;
+
 #[derive(Clone, Copy, Hash, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BeamDirection {
     Down,
