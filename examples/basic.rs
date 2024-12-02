@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use ship_frame::*;
+use ship_frame::{client, server};
 
 fn main() {
     // let mut app = App::new();
@@ -13,23 +13,24 @@ fn main() {
 
     // app.run();
 
-    let mut allocator = FrameIdAllocator::new();
+    let mut id_world = server::FrameIdWorld::default();
 
-    let (mut frame, a, b) = FrameGraph::new(
-        &mut allocator,
+    let mut server_frame = server::ShipFrame::<()>::new_from_beam(
+        &mut id_world,
         Vec3::new(0., 0., 0.),
         Vec3::new(5., 0., 0.),
         (),
     );
-    let c = frame.new_beam_extend(&mut allocator, b, Vec3::new(0., 5., 0.), ());
-    let d = frame.new_beam_extend(&mut allocator, c, Vec3::new(5., 5., 0.), ());
-    frame.new_beam_join(a, d, ());
 
-    println!("original: {:?}", frame);
+    let (vertex_b, _) = server_frame.iter_vertices().nth(1).unwrap();
 
-    if let Some(split) = frame.remove_beam(BeamId::from_vertices(b, c)) {
-        println!("split into {:?} and {:?}", frame, split);
-    } else {
-        println!("no split");
-    }
+    let new_beam_message = server_frame.serialize();
+    let mut update_messages = Vec::new();
+
+    update_messages.push(server_frame.add_beam_extend(
+        &mut id_world,
+        vertex_b,
+        Vec3::new(5., 5., 0.),
+        (),
+    ))
 }
